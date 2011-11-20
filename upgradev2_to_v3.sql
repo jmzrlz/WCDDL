@@ -1,0 +1,13 @@
+ALTER TABLE wcddl_blacklist ADD COLUMN reason varchar(255) DEFAULT NULL;
+ALTER TABLE wcddl_downloads CHANGE COLUMN dat time_added DATETIME NOT NULL;
+ALTER TABLE wcddl_downloads MODIFY COLUMN views int(5) NOT NULL DEFAULT '1';
+ALTER TABLE wcddl_downloads DROP INDEX sid;
+ALTER TABLE wcddl_downloads ADD FULLTEXT (title);
+ALTER TABLE wcddl_downloads ADD INDEX (type);
+ALTER TABLE wcddl_downloads ADD INDEX (sid);
+ALTER TABLE wcddl_recents DROP INDEX searches;
+ALTER TABLE wcddl_recents DROP PRIMARY KEY;
+ALTER TABLE wcddl_recents ADD COLUMN id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST;
+ALTER TABLE wcddl_recents MODIFY COLUMN searches INT(5) NOT NULL DEFAULT '1';
+ALTER TABLE wcddl_recents ADD INDEX (searches);
+INSERT INTO wcddl_config (config_name, config_val) VALUES ('admin_links', 'a:7:{i:0;a:2:{i:0;s:9:"?go=queue";i:1;s:5:"Queue";}i:1;a:2:{i:0;s:13:"?go=downloads";i:1;s:9:"Downloads";}i:2;a:2:{i:0;s:13:"?go=whitelist";i:1;s:9:"Whitelist";}i:3;a:2:{i:0;s:13:"?go=blacklist";i:1;s:9:"Blacklist";}i:4;a:2:{i:0;s:11:"?go=modules";i:1;s:7:"Modules";}i:5;a:2:{i:0;s:16:"?go=downloadsAdd";i:1;s:12:"Add Download";}i:6;a:2:{i:0;s:9:"?go=sites";i:1;s:12:"Manage Sites";}}');

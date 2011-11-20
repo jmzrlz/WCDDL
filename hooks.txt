@@ -1,0 +1,82 @@
+Downloads::get
+	- DownloadsPreGet
+		- Current Downloads instance, $this
+	- DownloadsGetQuery
+		- SQL statement without WHERE/ORDER/LIMIT
+	- DownloadsGetWhere
+		- SQL WHERE clause
+	- DownloadsGetFullQuery
+		- SQL statement
+	- DownloadsGetRows
+		- Resulting array of Download instances
+	- DownloadsPostGet
+		- Current Downloads instance, $this
+
+Downloads::logQuery
+	- LogQueryPre
+		- Current query (as in search terms)
+
+Downloads::pages
+	- PagesPre
+		- Map of page patterns (array)
+	- PagesPost
+		- Resulting array of page links
+
+Downloads::showQueries
+	- ShowQueriesPost
+		- Resulting array of DownloadQuery instances
+
+Download::save
+	- DownloadSavePre
+		- SQL statement and params
+
+Download::addView
+	- DownloadAddView
+		- Current Download instance
+
+Download::setRating
+	- DownloadSetRating
+		- Current Download instance
+		- Rating value to be set
+
+Download::showTitle
+	- DownloadShowTitle
+		- Unchanged title
+
+Download::queue
+	- DownloadQueuePre
+		- Current Download instance
+
+Database::quickColumn
+	- DatabaseColumn
+		- SQL statement and args
+
+Database::quickRowObject
+	- DatabaseRowObject
+		- Class name to output
+		- SQL statement and args
+
+Database::quickRowObjects
+	- DatabaseRowObjects
+		- Class name to output
+		- SQL statement and args
+
+Database::quickExecute
+	- DatabaseExecute
+		- SQL statement and args
+
+Submit::__construct
+	- SubmitConstruct
+		- Current Submit instance
+
+Submit::submit
+	- SubmitValidation
+		- Current Submit instance
+		- Populate ->error to cause an error
+	- SubmitDownload
+		- Single Download instance
+
+Submit::filterDownloads
+	- SubmitFilterValidate
+		- Current validity (always true)
+		- Set to false to mark download as invalid
