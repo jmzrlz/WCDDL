@@ -1,0 +1,8 @@
+WCDDL
+
+The de facto DDL script developed to replace previous, outdated and vulnerable scripts.
+
+The latest version of WCDDL requires the following:
+- >= PHP 5.3
+- MySQL
+- PDO (PHP, included by default)
