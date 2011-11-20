@@ -484,6 +484,7 @@ class Download {
 		Core::load()->executeHook('DownloadShowTitle', array(&$t));
 		$t = Common::displayStr($t);
 		Core::load()->executeHook('DownloadShowTitlePost', array(&$t));
+		return $t;
 	}
 
 	// Static methods
