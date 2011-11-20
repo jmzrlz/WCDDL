@@ -6,3 +6,9 @@ The latest version of WCDDL requires the following:
 - >= PHP 5.3
 - MySQL
 - PDO (PHP, included by default)
+
+To install:
+- Upload the modules folder and all PHP files
+- Import database.sql into your database
+- Edit wcfg.php to contain valid settings
+- Test it!
