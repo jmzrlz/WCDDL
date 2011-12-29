@@ -8,7 +8,7 @@
 // I coded this in widescreen so expect long lines
 
 define('WCDDL_GUTS', 1337);
-require "./my_wcfg.php";
+require "./wcfg.php";
 foreach(Core::load()->getModules() as $module)
 	include $module['path'];
 Core::load()->executeHook('init');
@@ -628,7 +628,7 @@ class Site {
 	// List stuff
 	public $page = 1;
 	public $maxPages = 1;
-	public $perPage = 3;
+	public $perPage = 20;
 
 	public function save() {
 		Core::load()->executeHook('SiteSavePre', array(&$this));
