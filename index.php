@@ -32,9 +32,9 @@ $rows = $downloads->get();
         foreach($rows as $row) {
         ?>
 		<tr>
-			<td><?=$row->type?></td>
-			<td><a href="download.php?id=<?=$row->id?>"><?=$row->showTitle()?></a></td>
-			<td><?=$row->views?></td>
+			<td><?php echo $row->type; ?></td>
+			<td><a href="download.php?id=<?php echo $row->id; ?>"><?php echo $row->showTitle(); ?></a></td>
+			<td><?php echo $row->views; ?></td>
 		</tr>
         <?php
         }

@@ -1,5 +1,6 @@
 <?php
 include "wc3.php";
+$sub_error = $sub_success = '';
 if(!empty($_POST)) {
 	$subs = Core::load()->mapRequest('Submit', array('title', 'url', 'type', 'sname', 'surl', 'email'));
 	if($subs->submit())
@@ -57,8 +58,8 @@ if(!empty($_POST)) {
                 <tr><td><small>Email</small></td><td>&nbsp;</td><td>&nbsp;</td></tr>
 				<tr><td><input type="text" name="email" value="<?php echo empty($_POST['email']) ? '' : common::displayStr($_POST['email']); ?>" /></td><td>&nbsp;</td><td>&nbsp;</td></tr>
                 <tr><td colspan="3" align="center"><input type="submit" value="Submit Downloads" /></td></tr>
-                <tr><td colspan="3" align="center" style="color:#FF0000;"><Br /><?=$sub_error?></td></tr>
-                <tr><td colspan="3" align="center" style="color:green;"><Br /><?=$sub_success?></td></tr>
+                <tr><td colspan="3" align="center" style="color:#FF0000;"><Br /><?php echo $sub_error; ?></td></tr>
+                <tr><td colspan="3" align="center" style="color:green;"><Br /><?php echo $sub_success; ?></td></tr>
                 </table>
                 </form>
 		</div>

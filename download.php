@@ -8,14 +8,14 @@ $download->addView();
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>WCDDL - <?=$download->showTitle()?></title>
+<title>WCDDL - <?php echo $download->showTitle(); ?></title>
 <meta name="keywords" content="Place your keywords here" />
 <meta name="description" content="Place your description here" />
 </head>
 
 <frameset cols="250,*" frameborder="no" border="0" framespacing="0">
-  <frame src="leftbar.php?id=<?=$download->id?>" name="leftFrame" scrolling="No" noresize="noresize" id="leftFrame" />
-  <frame src="<?=$download->url?>" name="mainFrame" id="mainFrame" />
+  <frame src="leftbar.php?id=<?php echo $download->id; ?>" name="leftFrame" scrolling="No" noresize="noresize" id="leftFrame" />
+  <frame src="<?php $download->url; ?>" name="mainFrame" id="mainFrame" />
 </frameset>
 <noframes><body>
 Get frames!

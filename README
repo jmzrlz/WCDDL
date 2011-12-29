@@ -12,3 +12,4 @@ To install:
 - Import database.sql into your database
 - Edit wcfg.php to contain valid settings
 - Test it!
+

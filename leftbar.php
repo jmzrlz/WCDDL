@@ -16,16 +16,16 @@ padding:10px;
 </style>
 </head>
 <body>
-<h2><?=$download->title?></h2><br />
-<small>in <?=$download->type?> section on <?=$download->time_added?></small><br /><Br />
-Views: <?=$download->views?><br />
+<h2><?php echo $download->title; ?></h2><br />
+<small>in <?php echo $download->type; ?> section on <?php echo $download->time_added; ?></small><br /><Br />
+Views: <?php echo $download->views; ?><br />
 <br />
-Provided by <a href="http://<?=$download->site_url?>" target="_top"><?=$download->site_name?></a>
+Provided by <a href="http://<?php echo $download->site_url; ?>" target="_top"><?php echo $download->site_name; ?></a>
 <Br /><Br />
 <div align="center">
 <br /><Br />
 <a href="/" target="_top">&laquo; Back Home</a><br />
-<a href="<?=$download->url?>" target="_top">Close Frame &raquo;</a>
+<a href="<?php echo $download->url; ?>" target="_top">Close Frame &raquo;</a>
 </div>
 </body>
 </html>
