@@ -936,7 +936,7 @@ class Admin {
 			$opts = !defined('WCDDL_TYPES') ? array() : explode(',', WCDDL_TYPES);
 			if(is_array($opts)) {
 				foreach($opts as $at) {
-					echo '<option value="'.$at.'"' . ($download->type == $at ? ' selected="selected"' : '') . '>'.$at.'</option>';
+					echo '<option value="'.$at.'">'.$at.'</option>';
 				}
 			}
 			echo '			</select>
