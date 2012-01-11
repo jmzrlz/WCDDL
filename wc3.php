@@ -1054,7 +1054,7 @@ class Admin {
 	private function blacklist() {
 		if(!empty($_POST['url'])) {
 			Site::blacklist($_POST['url'], $_POST['reason'], isset($_POST['delete_downloads']));
-			echo 'URL whitelisted.';
+			echo 'URL blacklisted.';
 		}
 		if(isset($_POST['delete']) && !empty($_POST['rows']) && is_array($_POST['rows'])) {
 			foreach($_POST['rows'] as $row)
