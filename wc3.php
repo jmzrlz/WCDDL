@@ -94,6 +94,81 @@ class Database {
 	public static function queryLogTime() {
 		return self::$logTime;
 	}
+
+	public static function insert($table, $map, $id = false) {
+		// Paranoia mode again
+		$table = preg_replace('#[^\w\-]+#', '', $table);
+		Core::load()->executeHook('DatabaseInsert', array(&$table, &$map));
+		$query = 'INSERT INTO ' . $table . ' (' . implode(', ', array_keys($map)) . ') VALUES (';
+		$params = array();
+		foreach($map as $field => $value) {
+			if(strpos($value, '(') !== false) {
+				$params[] = $value;
+				unset($map[$field]);
+				continue;
+			}
+			$params[] = ':' . $field;
+		}
+		$query .= implode(', ', $params) . ')';
+		if(!$c = self::query($query, $map))
+			return false;
+		return $id ? self::load()->lastInsertId() : $c->rowCount();
+	}
+
+	public static function delete($table, $map = array()) {
+		$table = preg_replace('#[^\w\-]+#', '', $table);
+		Core::load()->executeHook('DatabaseDelete', array(&$table, &$map));
+		$query = 'DELETE FROM ' . $table;
+		if(!empty($map)) {
+			$query .= ' WHERE ';
+			$where = array();
+			foreach($map as $field => $value) {
+				if(strpos($value, '(') !== false) {
+					$where[] = $field . ' = ' . $value;
+					unset($map[$field]);
+					continue;
+				}
+				$where[] = $field . ' = :' . $field;
+			}
+			$query .= implode(' AND ', $where);
+		}
+		if(!$c = self::query($query, $map))
+			return false;
+		return $c->rowCount();
+	}
+
+	public static function update($table, $map, $criteria = array()) {
+		$table = preg_replace('#[^\w\-]+#', '', $table);
+		Core::load()->executeHook('DatabaseUpdate', array(&$table, &$map));
+		$query = 'UPDATE ' . $table . ' SET ';
+		$params = array();
+		foreach($map as $field => $value) {
+			if(strpos($value, '(') !== false) {
+				$params[] = $field . ' = ' . $value;
+				unset($map[$field]);
+				continue;
+			}
+			$params[] = $field . ' = :' . $field;
+		}
+		$query .= implode(', ', $params);
+		if(!empty($criteria)) {
+			$query .= ' WHERE ';
+			$params = array();
+			foreach($criteria as $field => $value) {
+				if(strpos($value, '(') !== false) {
+					$params[] = $field . ' = ' . $value;
+					unset($criteria[$field]);
+					continue;
+				}
+				$params[] = $field . ' = :' . $field;
+			}
+			$query .= implode(' AND ', $params);
+		}
+		$map = array_merge($map, $criteria);
+		if(!$c = self::query($query, $map))
+			return false;
+		return $c->rowCount();
+	}
 }
 
 class Core {
@@ -435,8 +510,14 @@ class Download {
 
 	public function queue() {
 		Core::load()->executeHook('DownloadQueuePre', array(&$this));
-		$this->id = Database::quickExecute('INSERT INTO ' . WCDDL_DB_PREFIX . 'queue (sid, title, type, url) VALUES (:sid, :title, :type, :url)', array(
-			'sid' => $this->sid, 'title' => $this->title, 'type' => $this->type, 'url' => $this->url), true);
+		$id = array(
+			'sid' => $this->sid,
+			'title' => $this->title,
+			'type' => $this->type,
+			'url' => $this->url,
+		);
+		Core::load()->executeHook('DownloadQueueInsert', array(&$id));
+		$this->id = Database::insert(WCDDL_DB_PREFIX . 'queue', $id, true);
 		return $this->id;
 	}
 
@@ -444,7 +525,11 @@ class Download {
 		if(empty($this->id))
 			return false;
 		Core::load()->executeHook('DownloadDeQueuePre', array(&$this));
-		$dq = Database::quickExecute('DELETE FROM ' . WCDDL_DB_PREFIX . 'queue WHERE id = ?', array($this->id));
+		$dq = array(
+			'id' => $this->id,
+		);
+		Core::load()->executeHook('DownloadDeQueueDelete', array(&$id));
+		$dq = Database::delete(WCDDL_DB_PREFIX . 'queue', $dq);
 		$this->id = null;
 		return $dq;
 	}
@@ -453,20 +538,34 @@ class Download {
 		if(empty($this->id))
 			return false;
 		Core::load()->executeHook('DownloadDeletePre', array(&$this));
-		$d = Database::quickExecute('DELETE FROM ' . WCDDL_DB_PREFIX . 'downloads WHERE id = ?', array($this->id));
+		$d = array(
+			'id' => $this->id,
+		);
+		Core::load()->executeHook('DownloadDeleteDelete', array(&$d));
+		$d = Database::delete(WCDDL_DB_PREFIX . 'downloads', $d);
 		$this->id = null;
 		return $d;
 	}
 
 	public function save() {
-		$query = 'INSERT INTO ' . WCDDL_DB_PREFIX . 'downloads (sid, title, type, url, time_added) VALUES (:sid, :title, :type, :url, NOW())';
-		$params = array('sid' => $this->sid, 'title' => $this->title, 'type' => $this->type, 'url' => $this->url);
+		$params = array(
+			'sid' => $this->sid,
+			'title' => $this->title,
+			'type' => $this->type,
+			'url' => $this->url,
+			'time_added' => 'NOW()',
+		);
 		if(!empty($this->id)) {
-			$query = 'UPDATE ' . WCDDL_DB_PREFIX . 'downloads SET sid = :sid, title = :title, type = :type, url = :url WHERE id = :id';
-			$params['id'] = $this->id;
+			unset($params['time_added']);
+			$criteria = array(
+				'id' => $this->id,
+			);
+			Core::load()->executeHook('DownloadSaveUpdate', array(&$params, &$criteria));
+			Database::update(WCDDL_DB_PREFIX . 'downloads', $params, $criteria);
+		} else {
+			Core::load()->executeHook('DownloadSaveInsert', array(&$params));
+			$this->id = Database::insert(WCDDL_DB_PREFIX . 'downloads', $params, true);
 		}
-		Core::load()->executeHook('DownloadSavePre', array(&$query, &$params));
-		$this->id = Database::quickExecute($query, $params, true);
 		return $this->id;
 	}
 
@@ -633,15 +732,20 @@ class Site {
 	public function save() {
 		Core::load()->executeHook('SiteSavePre', array(&$this));
 		$query = 'INSERT INTO ' . WCDDL_DB_PREFIX . 'sites (url, name, email) VALUES (:url, :name, :email)';
-		$params = array('url' => $this->url, 'name' => $this->name, 'email' => $this->email);
+		$params = array(
+			'url' => $this->url,
+			'name' => $this->name,
+			'email' => $this->email,
+		);
 		if(!empty($this->id)) {
-			$query = 'UPDATE ' . WCDDL_DB_PREFIX . 'sites SET url = :url, name = :name, email = :email WHERE id = :id';
-			$params['id'] = $this->id;
+			$criteria = array('id' => $this->id);
+			Core::load()->executeHook('SiteSaveUpdate', array(&$params, &$criteria));
+			Database::update(WCDDL_DB_PREFIX . 'sites', $params, $criteria);
+		} else {
+			Core::load()->executeHook('SiteSaveInsert', array(&$params));
+			$this->id = Database::insert(WCDDL_DB_PREFIX . 'sites', $params, true);
 		}
-		Core::load()->executeHook('SiteSave', array(&$query, &$params));
-		$s = Database::quickExecute($query, $params, !empty($this->id) ? false : true);
-		$this->id = $s;
-		return $s;
+		return $this->id;
 	}
 
 	public function remove() {
