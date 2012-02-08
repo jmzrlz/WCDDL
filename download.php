@@ -15,7 +15,7 @@ $download->addView();
 
 <frameset cols="250,*" frameborder="no" border="0" framespacing="0">
   <frame src="leftbar.php?id=<?php echo $download->id; ?>" name="leftFrame" scrolling="No" noresize="noresize" id="leftFrame" />
-  <frame src="<?php $download->url; ?>" name="mainFrame" id="mainFrame" />
+  <frame src="<?php echo $download->url; ?>" name="mainFrame" id="mainFrame" />
 </frameset>
 <noframes><body>
 Get frames!
