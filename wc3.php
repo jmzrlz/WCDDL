@@ -203,7 +203,7 @@ class Core {
 	public function templateVar($name, $val=null) {
 		if(strpos($name, ' ') !== false)
 			return false;
-		if(!is_null($val))
+		if($val !== null)
 			$this->templateVariables[$name] = $val;
 		return array_key_exists($name, $this->templateVariables) ? $this->templateVariables[$name] : false;
 	}
@@ -247,7 +247,7 @@ class Core {
 
 	public function executeHook($name, $data=null) {
 		if(empty($this->hookList[$name]))
-			return is_null($data) ? true : $data;
+			return $data === null ? true : $data;
 		foreach($this->hookList[$name] as $h) {
 			if(!is_array($h) && function_exists($h))
 				call_user_func_array($h, !is_array($data) ? array() : $data);
@@ -257,7 +257,7 @@ class Core {
 					call_user_func_array(array($c, $h[1]), !is_array($data) ? array() : $data);
 			}
 		}
-		return is_null($data) ? true : $data;
+		return $data === null ? true : $data;
 	}
 
 	public function hook($name, $func) {
