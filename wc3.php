@@ -175,6 +175,7 @@ class Core {
 	private static $instance;
 	private $templateVariables = array();
 	private $configCache = array();
+	protected $hookList = array();
 
 	public static function load() {
 		if(empty(self::$instance))
@@ -251,7 +252,7 @@ class Core {
 		foreach($this->hookList[$name] as $h) {
 			if(!is_array($h) && is_callable($h))
 				call_user_func_array($h, !is_array($data) ? array() : $data);
-			elseif(is_array($h) && (class_exists($h[0]) || is_object($h[0]))) {
+			elseif(is_array($h) && (is_object($h[0]) || class_exists((string) $h[0]))) {
 				$c = is_object($h[0]) ? $h[0] : new $h[0];
 				if(method_exists($c, $h[1]))
 					call_user_func_array(array($c, $h[1]), !is_array($data) ? array() : $data);
