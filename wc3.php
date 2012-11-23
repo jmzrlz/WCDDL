@@ -249,10 +249,10 @@ class Core {
 		if(empty($this->hookList[$name]))
 			return is_null($data) ? true : $data;
 		foreach($this->hookList[$name] as $h) {
-			if(!is_array($h) && function_exists($h))
+			if(!is_array($h) && is_callable($h))
 				call_user_func_array($h, !is_array($data) ? array() : $data);
-			elseif(is_array($h) && class_exists($h[0])) {
-				$c = new $h[0];
+			elseif(is_array($h) && (class_exists($h[0]) || is_object($h[0]))) {
+				$c = is_object($h[0]) ? $h[0] : new $h[0];
 				if(method_exists($c, $h[1]))
 					call_user_func_array(array($c, $h[1]), !is_array($data) ? array() : $data);
 			}
@@ -261,9 +261,9 @@ class Core {
 	}
 
 	public function hook($name, $func) {
-		if(!is_array($func) && str_word_count($func) != 1)
+		if(!is_array($func) && !is_callable($func) && str_word_count($func) != 1)
 			return false;
-		if(!isset($this->hookList[$name]))
+		if(!array_key_exists($name, $this->hookList))
 			$this->hookList[$name] = array();
 		if(!is_array($func))
 			$this->hookList[$name][] = $func;
