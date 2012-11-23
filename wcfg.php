@@ -31,4 +31,4 @@ define('WCDDL_PATH', '/path/to/wcddl/');
 define('WCDDL_PATH_MODULES', '/path/to/wcddl/modules/dir');
 define('WCDDL_URL', 'http://mysite.com/');
 define('WCDDL_TYPES', 'app,game,music,movie,xxx,other');
-define('WCDDL_VERSION', 3.12);
+define('WCDDL_VERSION', 3.13);
