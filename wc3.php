@@ -13,6 +13,16 @@ foreach(Core::load()->getModules() as $module)
 	include $module['path'];
 Core::load()->executeHook('init');
 
+class DatabaseRaw {
+	protected $val;
+	public function __construct($val) {
+		$this->val = $val;
+	}
+	public function __toString() {
+		return $this->val;
+	}
+}
+
 class Database {
 	private static $db;
 	private static $log = array();
@@ -102,8 +112,8 @@ class Database {
 		$query = 'INSERT INTO ' . $table . ' (' . implode(', ', array_keys($map)) . ') VALUES (';
 		$params = array();
 		foreach($map as $field => $value) {
-			if(strpos($value, '(') !== false) {
-				$params[] = $value;
+			if($value instanceof DatabaseRaw) {
+				$params[] = (string) $value;
 				unset($map[$field]);
 				continue;
 			}
@@ -123,8 +133,8 @@ class Database {
 			$query .= ' WHERE ';
 			$where = array();
 			foreach($map as $field => $value) {
-				if(strpos($value, '(') !== false) {
-					$where[] = $field . ' = ' . $value;
+				if($value instanceof DatabaseRaw) {
+					$where[] = $field . ' = ' . ((string) $value);
 					unset($map[$field]);
 					continue;
 				}
@@ -143,8 +153,8 @@ class Database {
 		$query = 'UPDATE ' . $table . ' SET ';
 		$params = array();
 		foreach($map as $field => $value) {
-			if(strpos($value, '(') !== false) {
-				$params[] = $field . ' = ' . $value;
+			if($value instanceof DatabaseRaw) {
+				$params[] = $field . ' = ' . ((string) $value);
 				unset($map[$field]);
 				continue;
 			}
@@ -155,8 +165,8 @@ class Database {
 			$query .= ' WHERE ';
 			$params = array();
 			foreach($criteria as $field => $value) {
-				if(strpos($value, '(') !== false) {
-					$params[] = $field . ' = ' . $value;
+				if($value instanceof DatabaseRaw) {
+					$params[] = $field . ' = ' . ((string) $value);
 					unset($criteria[$field]);
 					continue;
 				}
@@ -554,7 +564,7 @@ class Download {
 			'title' => $this->title,
 			'type' => $this->type,
 			'url' => $this->url,
-			'time_added' => 'NOW()',
+			'time_added' => new DatabaseRaw('NOW()'),
 		);
 		if(!empty($this->id)) {
 			unset($params['time_added']);
